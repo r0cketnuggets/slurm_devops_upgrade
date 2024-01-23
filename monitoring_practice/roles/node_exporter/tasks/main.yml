@@ -1,10 +1,4 @@
 ---
-- name: Check current node_exporter version
-  ansible.builtin.command: '{{ node_exporter_bin_path }} --version'
-  failed_when: false
-  changed_when: false
-  register: version_check
-
 - name: Create node_exporter user
   ansible.builtin.user:
     name: node_exporter

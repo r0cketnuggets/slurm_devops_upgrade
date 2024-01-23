@@ -1,0 +1,21 @@
+---
+fluentbit_repository:
+  yum: 'http://packages.fluentbit.io/centos/7/$basearch/'
+  apt: 'deb https://packages.fluentbit.io/ubuntu/focal focal main'
+
+fluentbit_flush_seconds: 5
+fluentbit_daemon: 'off'
+fluentbit_log_level: ''
+fluentbit_log_file: ''
+fluentbit_enable_metrics: 'off'
+fluentbit_metrics_host: ''
+fluentbit_metrics_port: ''
+fluentbit_storage_path: ''
+fluentbit_storage_sync: 'normal'
+fluentbit_storage_checksum: 'off'
+fluentbit_storage_mem_limit: ''
+
+fluentbit_inputs: []
+fluentbit_outputs: []
+fluentbit_filters: []
+fluentbit_custom_conf_files: []

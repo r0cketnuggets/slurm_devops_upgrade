@@ -1,0 +1,52 @@
+# {{ ansible_managed }}
+
+[SERVICE]
+    Flush        {{ fluentbit_flush_seconds }}
+    Daemon       {{ fluentbit_daemon }}
+
+    Log_Level    {{ fluentbit_log_level }}
+{% if fluentbit_log_file %}
+    Log_File     {{ fluentbit_log_file }}
+{% endif %}
+
+    HTTP_Server  {{ fluentbit_enable_metrics }}
+    HTTP_Listen  {{ fluentbit_metrics_host }}
+    HTTP_Port    {{ fluentbit_metrics_port }}
+
+{% if fluentbit_storage_path %}
+    Storage.path              {{ fluentbit_storage_path }}
+{% endif %}
+    Storage.sync              {{ fluentbit_storage_sync }}
+    Storage.checksum          {{ fluentbit_storage_checksum }}
+
+{% if fluentbit_storage_mem_limit %}
+    Storage.backlog.mem_limit {{ fluentbit_storage_mem_limit }}
+{% endif %}
+
+{% for input in fluentbit_inputs %}
+[INPUT]
+{% for key in input %}
+    {{ key }} {{ input[key] }}
+{% endfor %}
+{% endfor %}
+
+
+{% for output in fluentbit_outputs %}
+[OUTPUT]
+{% for key in output %}
+    {{ key }} {{ output[key] }}
+{% endfor %}
+{% endfor %}
+
+
+{% for filter in fluentbit_filters %}
+[FILTER]
+{% for key in filter %}
+    {{ key }} {{ filter[key] }}
+{% endfor %}
+{% endfor %}
+
+
+{% if fluentbit_custom_conf_files is defined and fluentbit_custom_conf_files|length %}
+@INCLUDE custom/conf/*
+{% endif %}

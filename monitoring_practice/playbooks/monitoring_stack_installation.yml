@@ -1,0 +1,39 @@
+- name: EFK stack installation
+  hosts: server-master
+  become: yes
+  
+  roles:
+    - role: prometheus.prometheus
+      tags: prom
+      vars:
+        prometheus_web_listen_address: '0.0.0.0:9090'
+    
+    - role: node_exporter
+      tags: node_exp
+      vars:
+        node_exporter_host: '0.0.0.0'
+        node_exporter_port: 9100
+    
+    - role: elastic_and_kibana
+      tags: ek
+      vars:
+        elasticsearch_host: 'localhost'
+        elasticsearch_port: 9200
+        kibana_server_host: '0.0.0.0'
+        kibana_server_port: 5601
+        kibana_elasticsearch_url: 'http://localhost:9200'
+
+    - role: fluentbit
+      tags: fluent
+      vars:
+        fluentbit_metrics_host: '0.0.0.0'
+        fluentbit_metrics_port: 2020
+        fluentbit_log_level: info
+        fluentbit_inputs:
+          - Name: systemd
+            Tag: host.*
+        fluentbit_outputs:
+          - Name: es
+            Match: '*'
+            Host: 'localhost'
+            Port: 9200

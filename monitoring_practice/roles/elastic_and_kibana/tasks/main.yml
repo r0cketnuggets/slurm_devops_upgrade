@@ -1,0 +1,55 @@
+---
+- include_tasks: setup-RedHat.yml
+  when: ansible_os_family == 'RedHat'
+
+- include_tasks: setup-Debian.yml
+  when: ansible_os_family == 'Debian'
+
+# Elasticsearch
+- name: Install Elasticsearch
+  ansible.builtin.package:
+    name: elasticsearch
+    state: present
+
+- name: Copy Elasticsearch configuration
+  ansible.builtin.template:
+    src: '{{ elasticsearch_config_template }}'
+    dest: '{{ elasticsearch_config_file_path }}'
+    owner: root
+    group: elasticsearch
+    mode: 0644
+  notify: Restart Elasticsearch
+
+- name: Start Elasticsearch
+  ansible.builtin.service:
+    name: elasticsearch
+    state: started
+    enabled: true
+
+- name: Elasticsearch healthcheck
+  ansible.builtin.wait_for:
+    host: '{{ elasticsearch_host }}'
+    port: '{{ elasticsearch_port }}'
+    delay: 5
+    timeout: 300
+
+# Kibana
+- name: Install Kibana
+  ansible.builtin.package:
+    name: kibana
+    state: present
+
+- name: Start Kibana
+  ansible.builtin.service:
+    name: kibana
+    state: started
+    enabled: true
+
+- name: Copy Kibana configuration.
+  ansible.builtin.template:
+    src: '{{ kibana_config_template }}'
+    dest: '{{ kibana_config_file_path }}'
+    owner: root
+    group: kibana
+    mode: 0644
+  notify: Restart Kibana

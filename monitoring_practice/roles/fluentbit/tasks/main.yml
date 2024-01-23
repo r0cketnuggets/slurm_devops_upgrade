@@ -1,0 +1,40 @@
+---
+- include_tasks: setup-RedHat.yml
+  when: ansible_os_family == 'RedHat'
+
+- include_tasks: setup-Debian.yml
+  when: ansible_os_family == 'Debian'
+
+- name: Install td-agent-bit package
+  ansible.builtin.package:
+    name: td-agent-bit
+    state: present
+
+- name: Copy td-agent-bit configuration
+  ansible.builtin.template:
+    src: td-agent-bit.conf.j2
+    dest: /etc/td-agent-bit/td-agent-bit.conf
+    mode: 0644
+  notify: Restart fluentbit
+
+- name: Start fluentbit
+  ansible.builtin.service:
+    name: td-agent-bit
+    state: started
+    enabled: true
+
+- name: Create custom conf directory
+  ansible.builtin.file:
+    path: '/etc/td-agent-bit/custom/{{ item }}'
+    state: directory
+  loop:
+    - conf
+
+- name: Copy custom configuration files
+  ansible.builtin.copy:
+    src: '{{ item }}'
+    dest: /etc/td-agent-bit/custom/conf/
+    mode: 0644
+  loop: '{{ fluentbit_custom_conf_files }}'
+  when: fluentbit_custom_conf_files is defined
+  notify: Restart fluentbit

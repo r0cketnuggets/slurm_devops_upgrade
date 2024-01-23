@@ -1,0 +1,19 @@
+---
+- name: Add required dependencies
+  ansible.builtin.apt:
+    name:
+      - apt-transport-https
+      - gnupg2
+    state: present
+
+- name: Add td-agent-bit apt-key
+  ansible.builtin.apt_key:
+    url: https://packages.fluentbit.io/fluentbit.key
+    state: present
+
+- name: Add td-agent-bit repository
+  ansible.builtin.apt_repository:
+    repo: '{{ fluentbit_repository.apt }}'
+    state: present
+    filename: td-agent-bit
+    update_cache: true

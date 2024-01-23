@@ -1,0 +1,5 @@
+---
+- name: Restart fluentbit
+  ansible.builtin.service:
+    name: td-agent-bit
+    state: restarted

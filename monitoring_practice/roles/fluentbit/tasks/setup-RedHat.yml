@@ -1,0 +1,9 @@
+---
+- name: Add yum repository
+  ansible.builtin.yum_repository:
+    name: td-agent-bit
+    description: TD Agent Bit
+    baseurl: '{{ fluentbit_repository.yum }}'
+    gpgkey: https://packages.fluentbit.io/fluentbit.key
+    gpgcheck: true
+    enabled: true

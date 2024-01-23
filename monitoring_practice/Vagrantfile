@@ -1,0 +1,45 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+
+  config.vm.provision "file", source: "./files/vagrant_test.pub", destination: "/home/vagrant/.ssh/"
+  config.vm.box_download_insecure = true
+
+  config.vm.define "controlnode" do |controlnode|
+    controlnode.vm.box = "ubuntu/focal64"
+    controlnode.vm.hostname = "controlnode"
+    controlnode.vm.network "private_network", ip: "192.168.50.4"
+    controlnode.vm.synced_folder "./files","/home/vagrant/files"
+    controlnode.vm.provision "file", source: "./files/vagrant_test", destination: "/home/vagrant/.ssh/"
+    controlnode.vm.provision "file", source: "./files/vagrant_test.pub", destination: "/home/vagrant/.ssh/"
+    controlnode.vm.provision "shell", inline: <<-SHELL
+      sudo sed -i 's/ChallengeResponseAuthentication no/ChallengeResponseAuthentication yes/#g' /etc/ssh/sshd_config
+      sudo service ssh restart
+	  sudo add-apt-repository multiverse -y
+	  sudo add-apt-repository ppa:ansible/ansible -y
+	  sudo apt update
+	  sudo apt install -y build-essential linux-headers-$(uname -r)
+      sudo apt -y install sshpass ansible
+      chmod 600 /home/vagrant/.ssh/vagrant_test
+      chmod 644 /home/vagrant/.ssh/vagrant_test.pub
+    SHELL
+  end
+
+  config.vm.define "server_master" do |server_master|
+    server_master.vm.box = "centos/7"
+    server_master.vm.box_version = "2004.01"
+    server_master.vbguest.installer_options = { allow_kernel_upgrade: true }
+    server_master.vm.hostname = "server-master"
+    server_master.vm.network "private_network", ip: "192.168.56.41"
+    server_master.vm.synced_folder ".", "/vagrant", type: "virtualbox"
+    server_master.vm.provision "file", source: "./files/vagrant_test.pub", destination: "/home/vagrant/.ssh/"
+    server_master.vm.provision "shell", inline: <<-SHELL
+      chmod 644 /home/vagrant/.ssh/vagrant_test.pub
+      cat /home/vagrant/.ssh/vagrant_test.pub >> /home/vagrant/.ssh/authorized_keys
+      sudo yum install epel-release -y
+      sudo yum update -y
+      sudo yum install perl gcc dkms kernel-devel kernel-headers make bzip2 wget curl -y
+    SHELL
+  end
+end

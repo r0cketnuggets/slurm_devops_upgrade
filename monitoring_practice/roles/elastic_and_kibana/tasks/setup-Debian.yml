@@ -1,0 +1,24 @@
+---
+- name: Add required dependencies
+  ansible.builtin.apt:
+    name:
+      - apt-transport-https
+      - gnupg2
+    state: present
+
+- name: Add Elasticsearch apt-key
+  ansible.builtin.apt_key:
+    url: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+    state: present
+
+- name: Add Elasticsearch repository
+  ansible.builtin.apt_repository:
+    repo: '{{ elasticsearch_repository.apt }}'
+    state: present
+    update_cache: true
+
+- name: Add Kibana repository
+  ansible.builtin.apt_repository:
+    repo: '{{ kibana_repository.apt }}'
+    state: present
+    update_cache: true

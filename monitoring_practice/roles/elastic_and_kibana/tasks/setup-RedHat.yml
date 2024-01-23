@@ -1,0 +1,18 @@
+---
+- name: Add Elasticsearch repository
+  ansible.builtin.yum_repository:
+    name: elasticsearch-{{ elasticsearch_version }}
+    description: Elasticsearch repository for {{ elasticsearch_version }} packages
+    baseurl: '{{ elasticsearch_repository.yum }}'
+    gpgkey: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+    gpgcheck: true
+    enabled: true
+
+- name: Add Kibana repository
+  ansible.builtin.yum_repository:
+    name: kibana-{{ kibana_version }}
+    description: Kibana repository for {{ kibana_version }} packages
+    baseurl: '{{ kibana_repository.yum }}'
+    gpgkey: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+    gpgcheck: true
+    enabled: true

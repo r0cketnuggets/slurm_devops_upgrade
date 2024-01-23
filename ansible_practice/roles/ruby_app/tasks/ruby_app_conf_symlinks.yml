@@ -1,0 +1,23 @@
+---
+- name: Add symlink for nginx.conf
+  file:
+    src: "{{ ruby_app_location }}/config/nginx.conf"
+    dest: "{{ nginx_location }}/nginx.conf"
+    state: link
+    force: true
+  notify:
+    - Reload nginx
+
+- name: Add symlink for /app location
+  file:
+    src: "{{ ruby_app_location }}/app"
+    dest: "{{ nginx_location }}/app"
+    state: link
+    force: true
+
+- name: Add symlink for /app/public location
+  file:
+    src: "{{ ruby_app_location }}/public"
+    dest: "{{ nginx_location }}/app/public"
+    state: link
+    force: true

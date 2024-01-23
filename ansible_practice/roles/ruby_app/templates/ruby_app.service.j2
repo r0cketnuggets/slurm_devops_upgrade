@@ -1,0 +1,23 @@
+[Unit]
+Description=Ruby App for Slurm practicum
+After=multi-user.target
+
+[Service]
+Environment="SECRET_KEY_BASE=12345"
+Environment="RAILS_ENV=production"
+Environment="RAILS_LOG_TO_STDOUT=1"
+Environment="DB_HOST=127.0.0.1"
+Environment="DB_PORT=5432"
+Environment="DB_NAME=x_paste_db"
+Environment="DB_USER=vagrant"
+Environment="DB_PASSWORD=password"
+
+Type=simple
+ExecStartPre=/usr/local/bin/bundle exec /usr/local/bin/rake db:migrate
+ExecStart=/usr/local/bin/bundle exec /usr/local/bin/puma -b unix:///var/run/puma.sock -e $RAILS_ENV config.ru
+WorkingDirectory={{ ruby_app_location }}
+User=root
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

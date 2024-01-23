@@ -1,0 +1,15 @@
+---
+- name: Create systemd service file
+  template:
+    src: ruby_app.service.j2
+    dest: /etc/systemd/system/ruby_app.service
+    mode: 0644
+  notify:
+    - Reload systemctl
+
+- name: Start ruby_app service
+  service:
+    name: ruby_app.service
+    state: started
+    enabled: yes
+

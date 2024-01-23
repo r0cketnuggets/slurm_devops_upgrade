@@ -1,0 +1,64 @@
+---
+- name: Ruby with dependencies installation
+  hosts: rails
+  gather_facts: true
+  become: true
+  
+  pre_tasks:
+  - name: Install additional ruby build packages
+    yum:
+      state: present
+      name:
+        - readline-devel
+        - libffi-devel
+        - libxml2-devel
+        - libyaml-devel
+        - postgresql-devel
+        - libxslt-devel
+        - nodejs
+        - centos-release-scl-rh
+        - centos-release-scl
+    when: ansible_os_family == 'RedHat'
+    
+  - name: Install GCC version 9 for Centos 7
+    yum:
+      state: present
+      name:
+        - devtoolset-9-gcc
+        - devtoolset-9-gcc-c++
+        - devtoolset-9-binutils
+    when: ansible_os_family == 'RedHat'
+
+  - name: Activate new GCC
+    shell: |
+      source scl_source enable devtoolset-9
+    when: ansible_os_family == 'RedHat'
+
+  - name: Make the new devtoolset selection permanent
+    copy:
+      content: export X_SCLS="devtoolset-9"
+      dest: /etc/profile.d/devtoolset.sh
+    when: ansible_os_family == 'RedHat'
+  
+  roles:
+    - role: geerlingguy.ruby
+      workspace: /opt
+      ruby_download_url: http://cache.ruby-lang.org/pub/ruby/2.6/ruby-2.6.0.tar.gz
+      ruby_install_from_source: true
+      ruby_install_bundler: true
+      ruby_version: 2.6.0
+      ruby_install_gems_user: "root"
+      ruby_install_gems:
+        - name: bundler
+          version: 1.16.2
+          user_install: false
+
+  tasks:
+  - name: Add ruby gems symlinks
+    file:
+      src: "/usr/local/bin/{{ item }}"
+      dest: "/usr/bin/{{ item }}"
+      state: link
+      force: true
+    with_items:
+      - bundle

@@ -1,0 +1,15 @@
+---
+# Clone repository with credentials (vault)
+- include_vars: gitlab_slurm_creds.yml
+  no_log: true
+
+- include_tasks: clone_ruby_app_repo.yml
+
+# Install dependencies
+- include_tasks: ruby_app_dependencies.yml
+
+# Make symlinks for conf and location files  
+- include_tasks: ruby_app_conf_symlinks.yml
+
+# Create and start app as service
+- include_tasks: ruby_app_as_service.yml

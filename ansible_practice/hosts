@@ -1,0 +1,14 @@
+all:
+  children:
+    postgres:
+      hosts:
+        postgres_master:
+          ansible_host: 192.168.56.41
+    nginx:
+      hosts:
+        webserver_master:
+          ansible_host: 192.168.56.41
+    app:
+      hosts:
+        rails:
+          ansible_host: 192.168.56.41

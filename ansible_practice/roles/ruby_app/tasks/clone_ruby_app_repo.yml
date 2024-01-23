@@ -1,0 +1,11 @@
+- name: Clone repo
+  git:
+    repo: "https://{{ gitlab_user }}:{{ gitlab_pass|urlencode() }}@gitlab.slurm.io/edu/xpaste_practicum.git"
+    dest: "{{ ruby_app_location }}"
+
+- name: Change owner
+  file:
+    path: "{{ ruby_app_location }}"
+    owner: vagrant
+    group: vagrant
+    recurse: yes

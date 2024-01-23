@@ -1,0 +1,10 @@
+---
+- name: Install dependencies for ruby app
+  become_user: root
+  command: "{{ item }}"
+  loop:
+    - /usr/local/bin/bundle config build.nokogiri --use-system-libraries
+    - /usr/local/bin/bundle install --clean --no-cache --without 'development'
+  args:
+    chdir: "{{ ruby_app_location }}"
+  ignore_errors: true

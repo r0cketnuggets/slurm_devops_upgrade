@@ -1,0 +1,18 @@
+---
+- name: NGINX installation
+  hosts: webserver_master
+  gather_facts: true
+  become: true
+  
+  roles:
+    - role: geerlingguy.nginx
+      nginx_listen_ipv6: false
+      nginx_vhosts:
+      - listen: 80
+        server_name: example.com
+        root: /var/www/example.com
+        index: index.html index.htm
+        filename: example.com.conf
+        access_log: /var/log/nginx/access.log
+        error_log: /var/log/nginx/error.log
+        state: present

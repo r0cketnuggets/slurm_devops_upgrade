@@ -1,0 +1,8 @@
+---
+- name: Deploy ruby application
+  hosts: rails
+  gather_facts: false
+  become: true
+
+  roles:
+     - role: ruby_app

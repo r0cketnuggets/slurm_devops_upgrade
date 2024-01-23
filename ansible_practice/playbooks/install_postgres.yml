@@ -1,0 +1,13 @@
+---
+- name: Postgres installation
+  hosts: postgres_master
+  gather_facts: true
+  become: true
+  
+  roles:
+    - role: geerlingguy.postgresql
+      postgresql_databases:
+        - name: x_paste_db
+      postgresql_users:
+        - name: vagrant
+          password: password

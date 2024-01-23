@@ -39,12 +39,6 @@
     name: kibana
     state: present
 
-- name: Start Kibana
-  ansible.builtin.service:
-    name: kibana
-    state: started
-    enabled: true
-
 - name: Copy Kibana configuration.
   ansible.builtin.template:
     src: '{{ kibana_config_template }}'
@@ -53,3 +47,16 @@
     group: kibana
     mode: 0644
   notify: Restart Kibana
+
+- name: Start Kibana
+  ansible.builtin.service:
+    name: kibana
+    state: started
+    enabled: true
+
+- name: Kibana healthcheck
+  ansible.builtin.wait_for:
+    host: '{{ kibana_server_host }}'
+    port: '{{ kibana_server_port }}'
+    delay: 5
+    timeout: 300
